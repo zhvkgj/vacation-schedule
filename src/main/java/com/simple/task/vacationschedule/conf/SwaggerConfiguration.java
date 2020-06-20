@@ -22,11 +22,11 @@ public class SwaggerConfiguration {
                 .select()
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
-                .build();
-                //.securitySchemes(securitySchemes());
+                .build()
+                .securitySchemes(securitySchemes());
     }
 
-//    private List<? extends SecurityScheme> securitySchemes() {
-//        return Collections.singletonList(new ApiKey("Bearer", "Authorization", "header"));
-//    }
+    private List<? extends SecurityScheme> securitySchemes() {
+        return Collections.singletonList(new ApiKey("Bearer", "Authorization", "header"));
+    }
 }

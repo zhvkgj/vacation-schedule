@@ -4,8 +4,10 @@ import com.simple.task.vacationschedule.model.vacation.Vacation;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Date;
-import java.util.Optional;
+import java.util.List;
 
 public interface VacationRepository extends CrudRepository<Vacation, Long> {
-    Optional<Vacation> findByEmployeePersNumberAndStartDateBetween(String persNumber, Date startDate, Date endDate);
+    List<Vacation> findAllByEmployeePersNumberAndStartDateGreaterThanEqualAndEndDateLessThanEqual(String persNumber, Date startDate, Date endDate);
+    List<Vacation> findAllByEmployeePersNumber(String persNumber);
+    List<Vacation> findAllByStartDateGreaterThanEqualAndEndDateLessThanEqual(Date startDate, Date endDate);
 }

@@ -2,18 +2,28 @@ package com.simple.task.vacationschedule.data.controller;
 
 import com.simple.task.vacationschedule.data.service.EmployeeService;
 import com.simple.task.vacationschedule.model.employee.Employee;
-import com.simple.task.vacationschedule.model.employee.dto.GetEmployeeDTO;
+import com.simple.task.vacationschedule.model.employee.dto.GetEmployeeDto;
 import com.simple.task.vacationschedule.model.vacation.Vacation;
-import com.simple.task.vacationschedule.model.employee.dto.UpsertEmployeeDTO;
-import com.simple.task.vacationschedule.model.vacation.dto.UpsertVacationDTO;
+import com.simple.task.vacationschedule.model.employee.dto.UpsertEmployeeDto;
+import com.simple.task.vacationschedule.model.vacation.dto.UpsertVacationDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.management.InstanceNotFoundException;
 import javax.persistence.EntityExistsException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+@CrossOrigin
 @RestController
 @RequestMapping(value = "/employee")
 public class EmployeeController {
@@ -25,56 +35,118 @@ public class EmployeeController {
         this.modelMapper = modelMapper;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public GetEmployeeDTO getEmployeeById(@PathVariable(name = "id") long id) {
+    @CrossOrigin
+    @GetMapping("/current")
+    public ResponseEntity<Map<String, Object>> getEmployeeById() {
         try {
-            Employee employeeById = employeeService.getEmployeeById(id);
-            return modelMapper.map(employeeById, GetEmployeeDTO.class);
+            UserDetails principal = (UserDetails)
+                    SecurityContextHolder
+                            .getContext()
+                            .getAuthentication()
+                            .getPrincipal();
+
+            Map<String, Object> map = new HashMap<>();
+
+            String username = principal.getUsername();
+            String fullName = employeeService.getEmployeeByLogin(username).getFullName();
+
+            List<String> roles = principal
+                    .getAuthorities()
+                    .stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+
+
+            map.put("fullName", fullName);
+            map.put("login", username);
+            map.put("roles", roles);
+
+            return ResponseEntity.ok(map);
         } catch (InstanceNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
     }
 
-    @RequestMapping(value = "/", method = RequestMethod.POST)
-    public GetEmployeeDTO createEmployee(@RequestBody UpsertEmployeeDTO upsertEmployeeDTO) {
+    @GetMapping("/{id}")
+    public ResponseEntity<GetEmployeeDto> getEmployeeById(@PathVariable(name = "id") long id) {
+        try {
+            Employee employeeById = employeeService.getEmployeeById(id);
+            return ResponseEntity.ok(modelMapper.map(employeeById, GetEmployeeDto.class));
+
+        } catch (InstanceNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT);
+        }
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<GetEmployeeDto>> getAllEmployees() {
+        List<Employee> employeeList = employeeService.getAllEmployees();
+        return ResponseEntity.ok(
+                employeeList
+                .stream()
+                .map(e -> modelMapper.map(e, GetEmployeeDto.class))
+                .collect(Collectors.toList())
+        );
+    }
+
+    @GetMapping("/roles")
+    public ResponseEntity<List<Employee.Position>> getAllRoles() {
+        List<Employee> employeeList = employeeService.getAllEmployees();
+        return ResponseEntity.ok(Arrays.asList(Employee.Position.values()));
+    }
+
+    @PostMapping("/")
+    public ResponseEntity<GetEmployeeDto>
+    createEmployee(@RequestBody UpsertEmployeeDto upsertEmployeeDTO) {
         try {
             Employee employee = employeeService.createEmployee(modelMapper.map(upsertEmployeeDTO, Employee.class));
-            return modelMapper.map(employee, GetEmployeeDTO.class);
+            return ResponseEntity.ok(modelMapper.map(employee, GetEmployeeDto.class));
         } catch (EntityExistsException e) {
-            // TODO: add appropriate http status
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public GetEmployeeDTO updateEmployee(@PathVariable(name = "id") long id,
-                                         @RequestBody UpsertEmployeeDTO upsertEmployeeDTO) {
+    @PutMapping("/{id}")
+    public ResponseEntity<GetEmployeeDto> updateEmployee(@PathVariable(name = "id") long id,
+                                                         @RequestBody UpsertEmployeeDto upsertEmployeeDTO) {
         try {
-            Employee employee = employeeService.updateEmployeeById(id, modelMapper.map(upsertEmployeeDTO, Employee.class));
-            return modelMapper.map(employee, GetEmployeeDTO.class);
+            Employee employee =
+                    employeeService.updateEmployeeById(id, modelMapper.map(upsertEmployeeDTO, Employee.class));
+            return ResponseEntity.ok(modelMapper.map(employee, GetEmployeeDto.class));
+
         } catch (InstanceNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public GetEmployeeDTO deleteEmployee(@PathVariable(name = "id") long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<GetEmployeeDto> deleteEmployee(@PathVariable(name = "id") long id) {
         try {
             Employee employeeById = employeeService.deleteEmployeeById(id);
-            return modelMapper.map(employeeById, GetEmployeeDTO.class);
+            return ResponseEntity.ok(modelMapper.map(employeeById, GetEmployeeDto.class));
         } catch (InstanceNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
     }
 
-    @RequestMapping(value = "/add/vacation/{id}", method = RequestMethod.POST)
-    public GetEmployeeDTO addVacationToEmployee(@PathVariable(name = "id") long id,
-                                                @RequestBody UpsertVacationDTO upsertVacationDTO) {
+    @PostMapping("/add/vacation/{id}")
+    public ResponseEntity<GetEmployeeDto> addVacationToEmployee(@PathVariable(name = "id") long id,
+                                                                @RequestBody UpsertVacationDto upsertVacationDTO) {
         try {
             Employee employee = employeeService.addVacationToEmployee(id, modelMapper.map(upsertVacationDTO, Vacation.class));
-            return modelMapper.map(employee, GetEmployeeDTO.class);
+            return ResponseEntity.ok(modelMapper.map(employee, GetEmployeeDto.class));
         } catch (InstanceNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
+    }
+
+    @PostMapping("/check/login")
+    public ResponseEntity<Boolean> isEmployeeWithLoginAlreadyExist(@RequestParam(name = "login") String login) {
+        return ResponseEntity.ok(employeeService.isLoginAlreadyExist(login));
+    }
+
+    @PostMapping("/check/personal/number")
+    public ResponseEntity<Boolean> isEmployeeWithPernNumberAlreadyExist(@RequestParam(name = "persNumber") String persNumber) {
+        return ResponseEntity.ok(employeeService.isPersNumberAlreadyExist(persNumber));
     }
 }

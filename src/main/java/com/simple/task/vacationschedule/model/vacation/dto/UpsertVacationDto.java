@@ -11,7 +11,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpsertVacationDTO {
+public class UpsertVacationDto {
     private Date startDate;
     private Date endDate;
 }

@@ -11,7 +11,7 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpsertEmployeeDTO {
+public class UpsertEmployeeDto {
     private Date birthday;
     private String fullName;
     private String persNumber;
