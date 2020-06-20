@@ -1,6 +1,8 @@
 package com.simple.task.vacationschedule.model.employee.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.simple.task.vacationschedule.model.employee.Employee;
+import com.simple.task.vacationschedule.model.employee.Position;
 import com.simple.task.vacationschedule.model.vacation.dto.GetVacationDto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +17,7 @@ public class GetEmployeeDto {
     private Date birthday;
     private String fullName;
     private String persNumber;
-    private String position;
+    private Position position;
     private String login;
 
     // to avoid infinity cyclic loading

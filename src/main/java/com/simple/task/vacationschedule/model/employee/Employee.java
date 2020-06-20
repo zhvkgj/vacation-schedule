@@ -24,6 +24,7 @@ public class Employee {
     private String fullName;
     private String persNumber;
 
+    @Column(name = "position")
     @Enumerated(EnumType.STRING)
     private Position position;
 
@@ -34,14 +35,4 @@ public class Employee {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private List<Vacation> vacationsList;
-
-    public enum Position implements GrantedAuthority {
-        MANAGER,
-        EMPLOYEE;
-
-        @Override
-        public String getAuthority() {
-            return this.name();
-        }
-    }
 }

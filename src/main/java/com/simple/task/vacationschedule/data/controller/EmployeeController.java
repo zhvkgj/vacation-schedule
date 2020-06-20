@@ -2,6 +2,7 @@ package com.simple.task.vacationschedule.data.controller;
 
 import com.simple.task.vacationschedule.data.service.EmployeeService;
 import com.simple.task.vacationschedule.model.employee.Employee;
+import com.simple.task.vacationschedule.model.employee.Position;
 import com.simple.task.vacationschedule.model.employee.dto.GetEmployeeDto;
 import com.simple.task.vacationschedule.model.vacation.Vacation;
 import com.simple.task.vacationschedule.model.employee.dto.UpsertEmployeeDto;
@@ -90,9 +91,8 @@ public class EmployeeController {
     }
 
     @GetMapping("/roles")
-    public ResponseEntity<List<Employee.Position>> getAllRoles() {
-        List<Employee> employeeList = employeeService.getAllEmployees();
-        return ResponseEntity.ok(Arrays.asList(Employee.Position.values()));
+    public ResponseEntity<List<Position>> getAllRoles() {
+        return ResponseEntity.ok(Arrays.asList(Position.values()));
     }
 
     @PostMapping("/")
