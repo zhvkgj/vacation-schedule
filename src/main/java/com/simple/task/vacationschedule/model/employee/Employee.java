@@ -4,7 +4,6 @@ import com.simple.task.vacationschedule.model.vacation.Vacation;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.util.Date;

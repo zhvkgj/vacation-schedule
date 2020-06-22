@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.." name="vacation_report" pageWidth="700" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ff26bfda-5222-4b84-884d-ae7f6b9906b7">
+<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+<style name="Style1"/>
+<queryString>
+    <![CDATA[]]>
+</queryString>
+<field name="fullName" class="java.lang.String"/>
+<field name="startDate" class="java.lang.String"/>
+<field name="endDate" class="java.lang.String"/>
+<background>
+    <band splitType="Stretch"/>
+</background>
+<title>
+    <band height="51" splitType="Stretch">
+        <staticText>
+            <reportElement x="0" y="0" width="660" height="51" uuid="e4c7db8f-19a2-46d0-b672-d16d69b8bd79"/>
+            <box>
+                <bottomPen lineWidth="2.0"/>
+            </box>
+            <textElement textAlignment="Center" verticalAlignment="Middle">
+                <font fontName="DejaVu Sans" size="18"/>
+            </textElement>
+            <text><![CDATA[Отчет по отпускам]]></text>
+        </staticText>
+    </band>
+</title>
+<columnHeader>
+    <band height="45" splitType="Stretch">
+        <staticText>
+            <reportElement mode="Opaque" x="0" y="0" width="280" height="45" backcolor="#FDFFDE" uuid="7417b3e6-a2bd-4f34-acb3-f967c4251a30">
+                <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="796f5247-d9b5-4052-99ab-29502f805788"/>
+            </reportElement>
+            <box>
+                <bottomPen lineWidth="1.5"/>
+                <rightPen lineWidth="0.0"/>
+            </box>
+            <textElement textAlignment="Left" verticalAlignment="Middle" markup="none">
+                <font fontName="DejaVu Sans" size="12"/>
+            </textElement>
+            <text><![CDATA[ФИО]]></text>
+        </staticText>
+        <staticText>
+            <reportElement mode="Opaque" x="280" y="0" width="188" height="45" backcolor="#FDFFDE" uuid="c0314ab4-8ed0-424c-b842-6fbb4d204d6b">
+                <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="ba74a2e7-9af7-4322-8e78-aab57982f5e3"/>
+            </reportElement>
+            <box>
+                <bottomPen lineWidth="1.5"/>
+            </box>
+            <textElement textAlignment="Left" verticalAlignment="Middle">
+                <font fontName="DejaVu Sans" size="12"/>
+            </textElement>
+            <text><![CDATA[Начало отпуска]]></text>
+        </staticText>
+        <staticText>
+            <reportElement mode="Opaque" x="468" y="0" width="192" height="45" backcolor="#FDFFDE" uuid="eb036e7f-4422-4544-bc58-081404cefb00">
+                <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5aaa4187-e15f-4953-8925-942dcd77a975"/>
+            </reportElement>
+            <box>
+                <bottomPen lineWidth="1.5"/>
+            </box>
+            <textElement textAlignment="Left" verticalAlignment="Middle">
+                <font fontName="DejaVu Sans" size="12"/>
+            </textElement>
+            <text><![CDATA[Конец отпуска]]></text>
+        </staticText>
+    </band>
+</columnHeader>
+<detail>
+    <band height="48" splitType="Stretch">
+        <textField>
+            <reportElement x="0" y="0" width="280" height="48" uuid="0b1ed517-3aae-45eb-adf3-f32f70b995d0">
+                <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="796f5247-d9b5-4052-99ab-29502f805788"/>
+            </reportElement>
+            <box>
+                <bottomPen lineWidth="1.5"/>
+            </box>
+            <textElement verticalAlignment="Middle">
+                <font fontName="DejaVu Sans"/>
+            </textElement>
+            <textFieldExpression><![CDATA[$F{fullName}]]></textFieldExpression>
+        </textField>
+        <textField>
+            <reportElement x="280" y="0" width="188" height="48" uuid="3d17e912-cc0f-4877-977d-44eb238bc535">
+                <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="ba74a2e7-9af7-4322-8e78-aab57982f5e3"/>
+            </reportElement>
+            <box>
+                <bottomPen lineWidth="1.5"/>
+            </box>
+            <textElement verticalAlignment="Middle">
+                <font fontName="DejaVu Sans"/>
+            </textElement>
+            <textFieldExpression><![CDATA[$F{startDate}]]></textFieldExpression>
+        </textField>
+        <textField>
+            <reportElement x="468" y="0" width="192" height="48" uuid="b1831823-69c2-45ea-ae7d-cb4d4f31d9cf">
+                <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5aaa4187-e15f-4953-8925-942dcd77a975"/>
+            </reportElement>
+            <box>
+                <bottomPen lineWidth="1.5"/>
+            </box>
+            <textElement verticalAlignment="Middle">
+                <font fontName="DejaVu Sans"/>
+            </textElement>
+            <textFieldExpression><![CDATA[$F{endDate}]]></textFieldExpression>
+        </textField>
+    </band>
+</detail>
+</jasperReport>

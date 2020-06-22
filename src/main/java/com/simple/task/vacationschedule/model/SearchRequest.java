@@ -12,16 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchRequest {
-    private SearchType searchType;
-
     private String persNumber;
     private Date startDate;
     private Date endDate;
-
-    public enum SearchType {
-        PERS_NUM,
-        PERIOD,
-        ALL,
-        EMPTY
-    }
 }

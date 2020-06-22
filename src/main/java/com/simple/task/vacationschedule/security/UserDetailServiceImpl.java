@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,9 @@ public class UserDetailServiceImpl implements UserDetailsService {
         if (managers.isEmpty()) {
             Employee manager = new Employee();
             manager.setLogin("admin");
+            manager.setFullName("Александр Александрович Директоров");
+            manager.setBirthday(new Date(System.currentTimeMillis()));
+            manager.setPersNumber("1");
             manager.setPassword(passwordEncoder.encode("admin"));
             manager.setPosition(Position.MANAGER);
 

@@ -4,6 +4,7 @@ import com.simple.task.vacationschedule.data.repository.EmployeeRepository;
 import com.simple.task.vacationschedule.data.repository.VacationRepository;
 import com.simple.task.vacationschedule.model.employee.Employee;
 import com.simple.task.vacationschedule.model.vacation.Vacation;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.management.InstanceNotFoundException;
@@ -17,13 +18,16 @@ import java.util.stream.StreamSupport;
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final VacationRepository vacationRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public EmployeeService(EmployeeRepository employeeRepository, VacationRepository vacationRepository) {
+    public EmployeeService(EmployeeRepository employeeRepository, VacationRepository vacationRepository, PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
         this.vacationRepository = vacationRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Employee createEmployee(Employee employee) throws EntityExistsException {
+        employee.setPassword(passwordEncoder.encode(employee.getPassword()));
         Optional<Employee> employee1 =
                 employeeRepository.findByLoginAndPersNumber(employee.getLogin(), employee.getPersNumber());
 
@@ -38,6 +42,12 @@ public class EmployeeService {
         Optional<Employee> employee1 = employeeRepository.findById(id);
         employee1.orElseThrow(InstanceNotFoundException::new);
         employee.setId(id);
+
+        if (employee.getPassword() == null || employee.getPassword().isEmpty()) {
+            employee.setPassword(employee1.get().getPassword());
+        } else {
+            employee.setPassword(passwordEncoder.encode(employee.getPassword()));
+        }
 
         return employeeRepository.save(employee);
     }
