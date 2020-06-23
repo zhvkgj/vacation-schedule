@@ -20,11 +20,9 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     private final UserDetailsService userDetailsService;
     private final TokenAuthenticationService tokenAuthenticationService;
 
-    public JWTLoginFilter(
-            String url,
-            AuthenticationManager authManager,
-            UserDetailsService userDetailsService,
-            TokenAuthenticationService tokenAuthenticationService) {
+    public JWTLoginFilter(String url, AuthenticationManager authManager,
+                          UserDetailsService userDetailsService,
+                          TokenAuthenticationService tokenAuthenticationService) {
         super(new AntPathRequestMatcher(url));
         setAuthenticationManager(authManager);
         this.userDetailsService = userDetailsService;
@@ -32,21 +30,29 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-            throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request,
+                                                HttpServletResponse response)
+            throws AuthenticationException {
 
         String username = request.getParameter("login");
         String password = request.getParameter("password");
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-        return getAuthenticationManager()
-                .authenticate(new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities()));
+        return getAuthenticationManager().authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        userDetails,
+                        password,
+                        userDetails.getAuthorities()
+                )
+        );
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-                                            Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request,
+                                            HttpServletResponse response,
+                                            FilterChain chain,
+                                            Authentication authResult) {
         tokenAuthenticationService.addAuthentication(response, authResult.getName());
     }
 }

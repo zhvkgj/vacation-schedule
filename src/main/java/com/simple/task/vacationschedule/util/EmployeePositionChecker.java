@@ -5,7 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component("CheckPosition")
-public class CheckPosition {
+public class EmployeePositionChecker {
     public static boolean isManager() {
         return SecurityContextHolder
                 .getContext()

@@ -8,9 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Data
-@Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class UpsertVacationDto {
     private Date startDate;
     private Date endDate;

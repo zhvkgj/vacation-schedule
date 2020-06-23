@@ -1,4 +1,4 @@
-package com.simple.task.vacationschedule.data.repository;
+package com.simple.task.vacationschedule.data.repository.specification;
 
 import com.simple.task.vacationschedule.model.employee.Employee;
 import com.simple.task.vacationschedule.model.vacation.Vacation;
@@ -7,7 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Date;
 
-public class CustomSpecifications {
+public class SearchSpecificationsProvider {
     public static Specification<Vacation> persNumberEquals(Employee employeeWithPersNumber) {
         return (Specification<Vacation>) (root, criteriaQuery, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get(Vacation_.employee), employeeWithPersNumber);

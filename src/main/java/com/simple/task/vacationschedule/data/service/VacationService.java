@@ -14,48 +14,49 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static com.simple.task.vacationschedule.data.repository.CustomSpecifications.*;
+import static com.simple.task.vacationschedule.data.repository.specification.SearchSpecificationsProvider.*;
 
 @Service
 public class VacationService {
     private final VacationRepository vacationRepository;
     private final EmployeeRepository employeeRepository;
 
-    public VacationService(VacationRepository vacationRepository, EmployeeRepository employeeRepository) {
+    public VacationService(VacationRepository vacationRepository,
+                           EmployeeRepository employeeRepository) {
         this.vacationRepository = vacationRepository;
         this.employeeRepository = employeeRepository;
     }
 
-    public List<Vacation> getListVacations(SearchRequest searchRequest) {
-        Specification<Vacation> spec = null;
+    public List<Vacation> getMatchedVacations(SearchRequest searchRequest) {
+        Specification<Vacation> searchSpec = null;
 
         if (searchRequest.getPersNumber() != null) {
-            Optional<Employee> employeeWithPersNumber =
-                    employeeRepository.findByPersNumber(searchRequest.getPersNumber());
+            Optional<Employee> employeeWithPersNumber = employeeRepository
+                    .findByPersNumber(searchRequest.getPersNumber());
             if (employeeWithPersNumber.isPresent()) {
-                spec = persNumberEquals(employeeWithPersNumber.get());
+                searchSpec = persNumberEquals(employeeWithPersNumber.get());
             } else {
                 return Collections.emptyList();
             }
         }
 
         if (searchRequest.getStartDate() != null) {
-            if (spec != null) {
-                spec = spec.and(isStartDateGreaterThanEqual(searchRequest.getStartDate()));
+            if (searchSpec != null) {
+                searchSpec = searchSpec.and(isStartDateGreaterThanEqual(searchRequest.getStartDate()));
             } else {
-                spec = isStartDateGreaterThanEqual(searchRequest.getStartDate());
+                searchSpec = isStartDateGreaterThanEqual(searchRequest.getStartDate());
             }
         }
 
         if (searchRequest.getEndDate() != null) {
-            if (spec != null) {
-                spec = spec.and(isEndDateLessThanEqual(searchRequest.getEndDate()));
+            if (searchSpec != null) {
+                searchSpec = searchSpec.and(isEndDateLessThanEqual(searchRequest.getEndDate()));
             } else {
-                spec = isEndDateLessThanEqual(searchRequest.getEndDate());
+                searchSpec = isEndDateLessThanEqual(searchRequest.getEndDate());
             }
         }
 
-        return spec != null ? vacationRepository.findAll(spec) :
+        return searchSpec != null ? vacationRepository.findAll(searchSpec) :
                 StreamSupport.stream(vacationRepository.findAll().spliterator(), false)
                         .collect(Collectors.toList());
     }

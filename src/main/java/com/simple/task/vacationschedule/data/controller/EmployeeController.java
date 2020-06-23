@@ -35,11 +35,10 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetEmployeeDto> getEmployeeById(@PathVariable(name = "id") long id) {
+    public ResponseEntity<GetEmployeeDto> getEmployeeById(@PathVariable(name = "id") long employeeId) {
         try {
-            Employee employeeById = employeeService.getEmployeeById(id);
-            return ResponseEntity.ok(modelMapper.map(employeeById, GetEmployeeDto.class));
-
+            Employee employee = employeeService.getEmployeeById(employeeId);
+            return ResponseEntity.ok(modelMapper.map(employee, GetEmployeeDto.class));
         } catch (InstanceNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
@@ -47,9 +46,9 @@ public class EmployeeController {
 
     @GetMapping("/")
     public ResponseEntity<List<GetEmployeeDto>> getAllEmployees() {
-        List<Employee> employeeList = employeeService.getAllEmployees();
+        List<Employee> employees = employeeService.getAllEmployees();
         return ResponseEntity.ok(
-                employeeList
+                employees
                 .stream()
                 .map(e -> modelMapper.map(e, GetEmployeeDto.class))
                 .collect(Collectors.toList())
@@ -57,14 +56,14 @@ public class EmployeeController {
     }
 
     @GetMapping("/positions")
-    public ResponseEntity<Map<Position, String>> getAllPositions() {
-        Map<Position, String> positionStringMap = new HashMap<>();
+    public ResponseEntity<Map<Position, String>> getAllCompanyPositions() {
+        Map<Position, String> positionWithRussianTranslate = new HashMap<>();
 
         for (Position pos : Position.values()) {
-            positionStringMap.put(pos, pos.getRussianTranslate());
+            positionWithRussianTranslate.put(pos, pos.getRussianTranslate());
         }
 
-        return ResponseEntity.ok(positionStringMap);
+        return ResponseEntity.ok(positionWithRussianTranslate);
     }
 
     @PreAuthorize("@CheckPosition.isManager()")
@@ -83,10 +82,10 @@ public class EmployeeController {
     public ResponseEntity<GetEmployeeDto> updateEmployee(@PathVariable(name = "id") long id,
                                                          @RequestBody UpsertEmployeeDto upsertEmployeeDTO) {
         try {
-            Employee employee =
-                    employeeService.updateEmployeeById(id, modelMapper.map(upsertEmployeeDTO, Employee.class));
-            return ResponseEntity.ok(modelMapper.map(employee, GetEmployeeDto.class));
+            Employee employee = employeeService
+                    .updateEmployeeById(id, modelMapper.map(upsertEmployeeDTO, Employee.class));
 
+            return ResponseEntity.ok(modelMapper.map(employee, GetEmployeeDto.class));
         } catch (InstanceNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
@@ -94,10 +93,10 @@ public class EmployeeController {
 
     @PreAuthorize("@CheckPosition.isManager()")
     @DeleteMapping("/{id}")
-    public ResponseEntity<GetEmployeeDto> deleteEmployee(@PathVariable(name = "id") long id) {
+    public ResponseEntity<GetEmployeeDto> deleteEmployee(@PathVariable(name = "id") long employeeId) {
         try {
-            Employee employeeById = employeeService.deleteEmployeeById(id);
-            return ResponseEntity.ok(modelMapper.map(employeeById, GetEmployeeDto.class));
+            Employee employee = employeeService.deleteEmployeeById(employeeId);
+            return ResponseEntity.ok(modelMapper.map(employee, GetEmployeeDto.class));
         } catch (InstanceNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
@@ -105,12 +104,12 @@ public class EmployeeController {
 
     @PreAuthorize("@CheckPosition.isManager()")
     @PostMapping("/add/vacation/{id}")
-    public ResponseEntity<GetVacationDto> addVacationToEmployee(@PathVariable(name = "id") long id,
+    public ResponseEntity<GetVacationDto> addVacationToEmployee(@PathVariable(name = "id") long employeeId,
                                                                 @RequestBody UpsertVacationDto upsertVacationDTO) {
         try {
-            Vacation vacationToAdd = modelMapper.map(upsertVacationDTO, Vacation.class);
-            employeeService.addVacationToEmployee(id, vacationToAdd);
-            return ResponseEntity.ok(modelMapper.map(vacationToAdd, GetVacationDto.class));
+            Vacation vacation = modelMapper.map(upsertVacationDTO, Vacation.class);
+            employeeService.addVacationToEmployee(employeeId, vacation);
+            return ResponseEntity.ok(modelMapper.map(vacation, GetVacationDto.class));
         } catch (InstanceNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }
@@ -118,13 +117,13 @@ public class EmployeeController {
 
     @PreAuthorize("@CheckPosition.isManager()")
     @GetMapping("/check/login")
-    public ResponseEntity<Boolean> isEmployeeWithLoginAlreadyExist(@RequestParam(name = "login") String login) {
+    public ResponseEntity<Boolean> isLoginAlreadyExist(@RequestParam(name = "login") String login) {
         return ResponseEntity.ok(employeeService.isLoginAlreadyExist(login));
     }
 
     @PreAuthorize("@CheckPosition.isManager()")
     @GetMapping("/check/personal/number")
-    public ResponseEntity<Boolean> isEmployeeWithPernNumberAlreadyExist(@RequestParam(name = "persNumber") String persNumber) {
+    public ResponseEntity<Boolean> isPersNumberAlreadyExist(@RequestParam(name = "persNumber") String persNumber) {
         return ResponseEntity.ok(employeeService.isPersNumberAlreadyExist(persNumber));
     }
 }

@@ -1,4 +1,4 @@
-package com.simple.task.vacationschedule.model;
+package com.simple.task.vacationschedule.data;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;

@@ -15,22 +15,32 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MultiFormatReportProvider {
-    public static byte[] exportReport(List<Vacation> vacs, String format) {
-        try {
-            URL resource = MultiFormatReportProvider.class.getClassLoader().getResource("vacation_report.jrxml");
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            List<ReportVacationDto> list =
-                    vacs.stream()
-                            .map(vac -> ReportVacationDto
-                                    .builder()
-                                    .fullName(vac.getEmployee().getFullName())
-                                    .startDate(dateFormat.format(vac.getStartDate()))
-                                    .endDate(dateFormat.format(vac.getEndDate())).build())
-                            .collect(Collectors.toList());
 
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(list);
-            JasperReport jasperReport = JasperCompileManager.compileReport(resource.getPath());
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport,
+    private static JasperReport createReportTemplateFromResource() throws JRException {
+        URL resource = MultiFormatReportProvider.class
+                .getClassLoader()
+                .getResource("vacation_report.jrxml");
+
+        return JasperCompileManager.compileReport(resource.getPath());
+    }
+
+    private static List<ReportVacationDto> convertVacationsToReportFormat(List<Vacation> vacs) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        return vacs.stream()
+                .map(vac -> ReportVacationDto
+                        .builder()
+                        .fullName(vac.getEmployee().getFullName())
+                        .startDate(dateFormat.format(vac.getStartDate()))
+                        .endDate(dateFormat.format(vac.getEndDate())).build())
+                .collect(Collectors.toList());
+    }
+
+    public static byte[] exportReport(List<Vacation> vacs, String format) throws JRException {
+        try {
+            JRBeanCollectionDataSource dataSource =
+                    new JRBeanCollectionDataSource(convertVacationsToReportFormat(vacs));
+            JasperPrint jasperPrint = JasperFillManager.fillReport(createReportTemplateFromResource(),
                     new HashMap<>(), dataSource);
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -65,7 +75,7 @@ public class MultiFormatReportProvider {
             outputStream.close();
 
             return result;
-        } catch (Exception e) {
+        } catch (IOException e) {
             return new byte[0];
         }
     }

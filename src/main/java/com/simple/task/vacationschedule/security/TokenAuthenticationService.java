@@ -39,14 +39,21 @@ public class TokenAuthenticationService {
 
     public Authentication getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(HEADER_STRING);
+
         if (token != null) {
 
-            String user = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace("Bearer", "")).getBody()
+            String user = Jwts
+                    .parser()
+                    .setSigningKey(SECRET)
+                    .parseClaimsJws(token.replace("Bearer", ""))
+                    .getBody()
                     .getSubject();
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(user);
-            return user != null ? new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities()) : null;
+            return user != null ? new UsernamePasswordAuthenticationToken(userDetails, "",
+                            userDetails.getAuthorities()) : null;
         }
+
         return null;
     }
 }

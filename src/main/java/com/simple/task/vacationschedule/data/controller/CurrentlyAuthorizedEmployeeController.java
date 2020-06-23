@@ -21,15 +21,15 @@ import java.util.stream.Collectors;
 @CrossOrigin
 @RestController
 @RequestMapping(value = "/auth")
-public class AuthorizationController {
+public class CurrentlyAuthorizedEmployeeController {
     private final EmployeeService employeeService;
 
-    public AuthorizationController(EmployeeService employeeService) {
+    public CurrentlyAuthorizedEmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
 
     @GetMapping("/current")
-    public ResponseEntity<Map<String, Object>> getEmployeeById() {
+    public ResponseEntity<Map<String, Object>> getCurrentlyAuthorizedEmployeeProperties() {
         try {
             UserDetails principal = (UserDetails)
                     SecurityContextHolder
@@ -37,23 +37,21 @@ public class AuthorizationController {
                             .getAuthentication()
                             .getPrincipal();
 
-            Map<String, Object> map = new HashMap<>();
-
-            String username = principal.getUsername();
-            String fullName = employeeService.getEmployeeByLogin(username).getFullName();
-
-            List<String> roles = principal
+            List<String> allCurrentEmployeePositions = principal
                     .getAuthorities()
                     .stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList());
 
+            String employeeUsername = principal.getUsername();
+            String fullEmployeeName = employeeService.getEmployeeByLogin(employeeUsername).getFullName();
 
-            map.put("fullName", fullName);
-            map.put("login", username);
-            map.put("roles", roles);
+            Map<String, Object> currentlyAuthorizedEmployeeProperties = new HashMap<>();
+            currentlyAuthorizedEmployeeProperties.put("fullName", fullEmployeeName);
+            currentlyAuthorizedEmployeeProperties.put("login", employeeUsername);
+            currentlyAuthorizedEmployeeProperties.put("roles", allCurrentEmployeePositions);
 
-            return ResponseEntity.ok(map);
+            return ResponseEntity.ok(currentlyAuthorizedEmployeeProperties);
         } catch (InstanceNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT);
         }

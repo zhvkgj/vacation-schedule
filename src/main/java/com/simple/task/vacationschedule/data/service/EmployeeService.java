@@ -20,7 +20,9 @@ public class EmployeeService {
     private final VacationRepository vacationRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public EmployeeService(EmployeeRepository employeeRepository, VacationRepository vacationRepository, PasswordEncoder passwordEncoder) {
+    public EmployeeService(EmployeeRepository employeeRepository, 
+                           VacationRepository vacationRepository, 
+                           PasswordEncoder passwordEncoder) {
         this.employeeRepository = employeeRepository;
         this.vacationRepository = vacationRepository;
         this.passwordEncoder = passwordEncoder;
@@ -28,8 +30,8 @@ public class EmployeeService {
 
     public Employee createEmployee(Employee employee) throws EntityExistsException {
         employee.setPassword(passwordEncoder.encode(employee.getPassword()));
-        Optional<Employee> employee1 =
-                employeeRepository.findByLoginAndPersNumber(employee.getLogin(), employee.getPersNumber());
+        Optional<Employee> employee1 = employeeRepository
+                .findByLoginAndPersNumber(employee.getLogin(), employee.getPersNumber());
 
         if (employee1.isPresent()) {
             throw new EntityExistsException();
@@ -38,18 +40,18 @@ public class EmployeeService {
         return employeeRepository.save(employee);
     }
 
-    public Employee updateEmployeeById(long id, Employee employee) throws InstanceNotFoundException {
-        Optional<Employee> employee1 = employeeRepository.findById(id);
-        employee1.orElseThrow(InstanceNotFoundException::new);
-        employee.setId(id);
+    public Employee updateEmployeeById(long employeeId, Employee newEmployee) throws InstanceNotFoundException {
+        Optional<Employee> oldEmployee = employeeRepository.findById(employeeId);
+        oldEmployee.orElseThrow(InstanceNotFoundException::new);
+        newEmployee.setId(employeeId);
 
-        if (employee.getPassword() == null || employee.getPassword().isEmpty()) {
-            employee.setPassword(employee1.get().getPassword());
+        if (newEmployee.getPassword() == null || newEmployee.getPassword().isEmpty()) {
+            newEmployee.setPassword(oldEmployee.get().getPassword());
         } else {
-            employee.setPassword(passwordEncoder.encode(employee.getPassword()));
+            newEmployee.setPassword(passwordEncoder.encode(newEmployee.getPassword()));
         }
 
-        return employeeRepository.save(employee);
+        return employeeRepository.save(newEmployee);
     }
 
     public Employee deleteEmployeeById(long id) throws InstanceNotFoundException {
@@ -60,8 +62,8 @@ public class EmployeeService {
         return employee.get();
     }
 
-    public Employee getEmployeeById(long id) throws InstanceNotFoundException {
-        Optional<Employee> employee = employeeRepository.findById(id);
+    public Employee getEmployeeById(long employeeId) throws InstanceNotFoundException {
+        Optional<Employee> employee = employeeRepository.findById(employeeId);
         employee.orElseThrow(InstanceNotFoundException::new);
 
         return employee.get();
@@ -80,11 +82,11 @@ public class EmployeeService {
                 .collect(Collectors.toList());
     }
 
-    public Employee addVacationToEmployee(long id, Vacation vacation) throws InstanceNotFoundException{
-        Employee employeeById = this.getEmployeeById(id);
+    public Employee addVacationToEmployee(long employeeId, Vacation vacation) throws InstanceNotFoundException{
+        Employee employeeById = this.getEmployeeById(employeeId);
         vacation.setEmployee(employeeById);
         vacationRepository.save(vacation);
-        return this.getEmployeeById(id);
+        return this.getEmployeeById(employeeId);
     }
 
     public boolean isLoginAlreadyExist(String login) throws EntityExistsException {
