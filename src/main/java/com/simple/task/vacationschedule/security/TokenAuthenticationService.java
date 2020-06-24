@@ -18,7 +18,7 @@ public class TokenAuthenticationService {
 
     private final UserDetailsService userDetailsService;
 
-    static final long EXPIRATIONTIME = 864_000_000; // 10 days
+    static final long EXPIRATION_TIME = 864_000_000;
 
     static final String SECRET = "ThisIsASecret";
 
@@ -31,9 +31,9 @@ public class TokenAuthenticationService {
 
     public void addAuthentication(HttpServletResponse res, String username) {
         String JWT = Jwts.builder().setSubject(username)
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATIONTIME))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(SignatureAlgorithm.HS512, SECRET).compact();
-        res.addHeader(HEADER_STRING, "Bearer" + " " + JWT);
+        res.addHeader(HEADER_STRING, JWT);
         res.addHeader("Access-Control-Expose-Headers", "Authorization");
     }
 
@@ -45,7 +45,7 @@ public class TokenAuthenticationService {
             String user = Jwts
                     .parser()
                     .setSigningKey(SECRET)
-                    .parseClaimsJws(token.replace("Bearer", ""))
+                    .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
 
